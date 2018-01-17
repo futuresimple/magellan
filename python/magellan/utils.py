@@ -7,4 +7,4 @@ def inject_rules(spark_session):
 
     jvm_helpers = SparkJVMHelpers(spark_session._sc)
     magellan_utils = jvm_helpers.import_scala_object('magellan.Utils')
-    magellan_utils.incjectRules(spark_session._jsparkSession)
+    magellan_utils.injectRules(spark_session._jsparkSession)
