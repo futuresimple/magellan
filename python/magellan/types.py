@@ -411,6 +411,106 @@ class PolyLine(Shape):
         return MultiLineString(p)
 
 
+class ZOrderCurveUDT(UserDefinedType):
+    """User-defined type (UDT).
+
+    .. note:: WARN: SpatialSDK Internal Use Only
+    """
+    pointUDT = PointUDT()
+
+    @classmethod
+    def sqlType(cls):
+        """
+        Underlying SQL storage type for this UDT.
+        """
+        return ZOrderCurve()
+
+    @classmethod
+    def module(cls):
+        """
+        The Python module of the UDT.
+        """
+        return "magellan.types"
+
+    @classmethod
+    def scalaUDT(cls):
+        """
+        The class name of the paired Scala UDT.
+        """
+        return "org.apache.spark.sql.types.ZOrderCurveUDT"
+
+    def serialize(self, obj):
+        """
+        Converts the a user-type object into a SQL datum.
+        """
+        if isinstance(obj, ZOrderCurve):
+
+            return (obj.bounding_box.xmin, obj.bounding_box.ymin, obj.bounding_box.xmax, obj.bounding_box.ymax, obj.precision, obj.bits)
+        else:
+            raise TypeError("cannot serialize %r of type %r" % (obj, type(obj)))
+
+    def deserialize(self, datum):
+        """
+        Converts a SQL datum into a user-type object.
+        """
+        if isinstance(datum, ZOrderCurve):
+            return datum
+        else:
+            assert len(datum) == 6, \
+                "ZOrderCurveUDT.deserialize given row with length %d but requires 6" % len(datum)
+            return ZOrderCurve(datum[0], datum[1], datum[2], datum[3], datum[4], datum[5])
+
+    def simpleString(self):
+        return 'zordercurve'
+
+    @classmethod
+    def fromJson(cls, json):
+        print "fromJson ZOrderCurveUDT"
+        raise NotImplementedError()
+        # indices = json["indices"]
+        # points = [PointUDT.fromJson(point) for point in json["points"]]
+        # return Polygon(indices, points)
+
+
+class ZOrderCurve(Shape):
+    """
+    TODO
+    """
+
+    __UDT__ = ZOrderCurveUDT()
+
+    def __init__(self, xmin=0.0, ymin=0.0, xmax=0.0, ymax=0.0, precision=0, bits=0):
+        self.bounding_box = BoundingBox(xmin, ymin, xmax, ymax)
+        self.precision = precision
+        self.bits = bits
+
+    def __str__(self):
+        return "ZOrderCurve (" + ",".join(map(str, (self.bounding_box, self.precision, self.bits))) + ")"
+
+    def __repr__(self):
+        return self.__str__()
+
+    def __reduce__(self):
+        return (ZOrderCurve, (self.bounding_box, self.precision, self.bits))
+
+    @classmethod
+    def fromJson(cls, json):
+        print json
+        raise NotImplementedError()
+        # indices = json["indices"]
+        # points = [PointUDT.fromJson(point) for point in json["points"]]
+        # return Polygon(indices, points)
+
+    def jsonValue(self):
+        return {"type": "udt",
+                "pyClass": "magellan.types.ZOrderCurveUDT",
+                "class": "magellan.index.ZOrderCurve",
+                "sqlType": "magellan.index.ZOrderCurve"}
+
+    def convert(self):
+        raise NotImplementedError()
+
+
 def _inbound_shape_converter(json_string):
     j = json.loads(json_string)
     shapeType = str(j["pyClass"])  # convert unicode to str
@@ -425,6 +525,7 @@ def _inbound_shape_converter(json_string):
 def _create_row_inbound_converter(dataType):
     return lambda *a: dataType.fromInternal(a)
 
+
 class BoundingBox(object):
 
     def __init__(self,xmin,ymin,xmax,ymax):
@@ -438,3 +539,9 @@ class BoundingBox(object):
             return True
         else:
             return False
+
+    def __str__(self):
+        return "BoundingBox (" + ",".join(map(str, [self.xmin, self.ymin, self.xmax, self.ymax])) + ")"
+
+    def __repr__(self):
+        return self.__str__()

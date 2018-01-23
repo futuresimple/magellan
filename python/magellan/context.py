@@ -16,7 +16,7 @@
 
 import sys
 
-from magellan.types import Point, Polygon, PolyLine
+from magellan.types import Point, Polygon, PolyLine, ZOrderCurve
 from pyspark import SparkContext
 from pyspark.rdd import RDD
 from pyspark.serializers import PickleSerializer, AutoBatchedSerializer
@@ -28,6 +28,7 @@ __all__ = ["MagellanContext"]
 _acceptable_types[type(Point())] =  (type(Point()),)
 _acceptable_types[type(Polygon())] = (type(Polygon()),)
 _acceptable_types[type(PolyLine())] = (type(PolyLine()),)
+_acceptable_types[type(ZOrderCurve())] = (type(ZOrderCurve()),)
 
 sc = SparkContext._active_spark_context
 loader = sc._jvm.Thread.currentThread().getContextClassLoader()

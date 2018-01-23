@@ -4,7 +4,8 @@
 from setuptools import setup, find_packages
 
 requirements = [
-    # TODO: put package requirements here
+    'spylon',
+    'pyyaml',
 ]
 setup(
     name='magellan',
