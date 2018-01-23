@@ -9,12 +9,12 @@ def _immutable_scala_map(jvm_helpers, dict_like):
 def index(df, precision):
     jvm_helpers = SparkJVMHelpers(df._sc)
     jdf = df._jdf
-    sparkSession = jdf.sparkSession()
+    spark_session = jdf.sparkSession()
     SpatialJoinHint = df._sc._jvm.magellan.catalyst.SpatialJoinHint
     Dataset = df._sc._jvm.org.apache.spark.sql.Dataset
 
     new_jdf = Dataset(
-        sparkSession,
+        spark_session,
         SpatialJoinHint(
             jdf.logicalPlan(),
             _immutable_scala_map(jvm_helpers, {"magellan.index.precision": str(precision)})

@@ -3,8 +3,12 @@
 /lib/
 /classes/
 /target/
-/python/magellan/*pyc
-/python/*pyc
+*pyc
+/python/.cache
+__pycache__
+/python/metastore_db
+/python/spark-warehouse
+/python/derby.log
 /project/project/
 /project/target/
 .idea/

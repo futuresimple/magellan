@@ -1,3 +1,5 @@
 spylon
 pyspark
 pytest
+pytest-cache
+pyyaml
